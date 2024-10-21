@@ -8,6 +8,21 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  lint-for-go:
+    runs-on: ubuntu-latest
+    steps:
+      -  uses: actions/checkout@v4
+      -  uses: actions/setup-go@v2
+         with: 
+           stable: 'false'
+           go-version: '1.14.1'
+
+      - name: lint
+        run: 
+           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.26.0
+
+          golangci-lint run 
+         
   # This workflow contains a single job called "super-lint"
   super-lint:
     name: Lint code base
@@ -19,10 +34,12 @@ jobs:
       - name: Checkout code
         # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it 
         uses: actions/checkout@v4
-
+        
         # Runs a Super-Linter, makes sure code is conforming to certain standards
       - name: Run Super-Linter
         uses: github/super-linter@v4
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
+          
+         
